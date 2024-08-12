@@ -130,3 +130,5 @@ dist
 .pnp.*
 
 /node_modules
+packages-lock.json
+Pages_2
