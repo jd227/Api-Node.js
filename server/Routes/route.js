@@ -1,68 +1,17 @@
-import { Router } from "express";
-import query from "../database/querys/query";
-import dbAsync from "../database/querys/queryAsync.js"
-import queryAsync from "../database/querys/queryAsync.js";
+
+import { Router } from 'express';
+import ItemRepository from "../database/querys/queryAsync.js";
+import config from "../database/connection/config.js";
+import Database from '../database/connection/dbAsync.js';
 
 const Routes = Router();
-const config = {
-    host: "localhost",
-    user: "root",
-    password: "password",
-    database: "test"
-}
 
-const dbAs= new dbAsync(config);
-const queryAs = new queryAsync(dbAs.getConnection());
-
-
-
-
-// Routes.get("/",(req, res)=>{
-//     res.json({"content": "Hello"});
-// });
-
-// // parametros por ruta
-// Routes.get("/home/:name",(req, res)=>{
-//     const nombre = req.params.name
-//     res.send(`Home ${nombre}`);
-// });
-
-// // query de la route
-// Routes.get("/products/nombre",(req,res)=>{
-//     const id = req.query.product;
-//     res.send(`Products ${id}`);
-// })
-
-// // body de la routa
-
-// Routes.post("/products",(req,res)=>{
-//     const {nombre,precio} = req.body;
-//     res.send(`Products ${nombre} creado con precio ${precio}`);
-// })
-
-// Router.get("/",(req, res)=> {
-//     res.json({
-//         message:"Hello word from express API"
-//     });
-// });
-
-// Router.get("/user", async (req,res) => {
-//     try {
-//         const users = await query.getAlluser();
-//         res.json(users);
-//     }
-//     catch (error) {
-//         console.log(users);
-//         res.status(500).json({error:"server error"});
-//     }
-// });
-
-// export default Routes;
-
+const dbAs = new Database(config);
+const queryAs = new ItemRepository(dbAs);
 
 Routes.get("/users",async (req,res) =>{
     try{
-        const users = await queryAsync.getAllUsers();
+        const users = await queryAs.getAllUsers();
         res.json(users);
     }
     catch(error){
@@ -72,10 +21,11 @@ Routes.get("/users",async (req,res) =>{
     } 
 });
 
-Routes.get("",async (req,res) =>{
+
+Routes.get("/users/:id",async (req,res) =>{
     try{
-        const data = await queryAs.getUsers();
-        dbAs.close();
+        const user = req.params.id;
+        const data = await queryAs.getUserById(user);
         res.json(data);
     }
     catch(error){
@@ -85,4 +35,44 @@ Routes.get("",async (req,res) =>{
     } 
 });
 
+Routes.get("/create/:Nombres/:Apellidos/:Celular/:Edad",async (req,res) =>{
+
+    try{
+        const {nombres, apellidos, celular, edad} = req.params;
+        const data = await queryAs.create(nombres, apellidos, celular, edad);
+        res.json(data);
+    }
+    catch(error){
+        console.error(error);
+        res.status(500).json({error: "server error"});
+
+    }
+});
+
+Routes.get("/update/:id/:edad",async (req,res) =>{
+    try{
+        const {id, edad} = req.params;
+        const data = await queryAs.update(id, edad);
+        res.json(data);
+    }
+    catch(error){
+        console.error(error);
+        res.status(500).json({error: "server error"});
+
+    }
+});
+
+
+Routes.get("/delete/:id",async (req,res) =>{
+    try{
+        const id = req.params.id;
+        const data = await queryAs.delete(id);
+        res.json(data);
+    }
+    catch(error){
+        console.error(error);
+        res.status(500).json({error: "server error"});
+
+    }
+});
 export default Routes;
