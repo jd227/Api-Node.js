@@ -1,27 +1,78 @@
-import { Router } from "express";
+
+import { Router } from 'express';
+import ItemRepository from "../database/querys/queryAsync.js";
+import config from "../database/connection/config.js";
+import Database from '../database/connection/dbAsync.js';
+
 const Routes = Router();
 
-Routes.get("/",(req, res)=>{
-    res.json({"content": "Hello"});
+const dbAs = new Database(config);
+const queryAs = new ItemRepository(dbAs);
+
+Routes.get("/users",async (req,res) =>{
+    try{
+        const users = await queryAs.getAllUsers();
+        res.json(users);
+    }
+    catch(error){
+        console.error(error);
+        res.status(500).json({error: "server error"});
+
+    } 
 });
 
-// parametros por ruta
-Routes.get("/home/:name",(req, res)=>{
-    const nombre = req.params.name
-    res.send(`Home ${nombre}`);
+
+Routes.get("/users/:id",async (req,res) =>{
+    try{
+        const user = req.params.id;
+        const data = await queryAs.getUserById(user);
+        res.json(data);
+    }
+    catch(error){
+        console.error(error);
+        res.status(500).json({error: "server error"});
+
+    } 
 });
 
-// query de la route
-Routes.get("/products/nombre",(req,res)=>{
-    const id = req.query.product;
-    res.send(`Products ${id}`);
-})
+Routes.get("/create/:Nombres/:Apellidos/:Celular/:Edad",async (req,res) =>{
 
-// body de la routa
+    try{
+        const {nombres, apellidos, celular, edad} = req.params;
+        const data = await queryAs.create(nombres, apellidos, celular, edad);
+        res.json(data);
+    }
+    catch(error){
+        console.error(error);
+        res.status(500).json({error: "server error"});
 
-Routes.post("/products",(req,res)=>{
-    const {nombre,precio} = req.body;
-    res.send(`Products ${nombre} creado con precio ${precio}`);
-})
+    }
+});
 
+Routes.get("/update/:id/:edad",async (req,res) =>{
+    try{
+        const {id, edad} = req.params;
+        const data = await queryAs.update(id, edad);
+        res.json(data);
+    }
+    catch(error){
+        console.error(error);
+        res.status(500).json({error: "server error"});
+
+    }
+});
+
+
+Routes.get("/delete/:id",async (req,res) =>{
+    try{
+        const id = req.params.id;
+        const data = await queryAs.delete(id);
+        res.json(data);
+    }
+    catch(error){
+        console.error(error);
+        res.status(500).json({error: "server error"});
+
+    }
+});
 export default Routes;

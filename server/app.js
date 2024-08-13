@@ -1,15 +1,14 @@
-import express from "express";
-import Routes from "./Routes/route.js";
-import Cors from "cors";
-
+import express from 'express';
+import Router from './Routes/route.js';
+import cors from 'cors';
 const App = express();
-
-App.use(Cors());
-App.use(express.json());
-App.use(Routes);
-
 const port = 8000;
+
+App.use(cors());
+App.use(express.json());
+App.use(Router);
+
 
 App.listen(port,()=>{
     console.log(`http://localhost:${port}`);
-})
+});
