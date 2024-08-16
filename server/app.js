@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import Router from './Routes/route.js';
 import cors from 'cors';
 import session from 'express-session';
+import limiter from './Routes/limit.js';
 
 dotenv.config();
 
@@ -12,7 +13,8 @@ const App = express();
 // const port = 8000;
 
 App.use(cors());
-
+App.use(limiter)
+// App.use("/home")
 App.use(session({
     secret : process.env.SECRET_KEY,
     resave: false,
