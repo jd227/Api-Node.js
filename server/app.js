@@ -14,7 +14,7 @@ const App = express();
 
 App.use(cors());
 App.use(limiter)
-// App.use("/home")
+// App.use("/home", limiter)
 App.use(session({
     secret : process.env.SECRET_KEY,
     resave: false,
