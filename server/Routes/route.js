@@ -9,6 +9,26 @@ const Routes = Router();
 const dbAs = new Database(config);
 const queryAs = new ItemRepository(dbAs);
 
+Routes.get("/", (req,res) => {
+    res.json({message: "Welcome to my API"});
+});
+
+Routes.post("/login", (req,res) => {
+    req.session.user = {
+        //logica de login
+        id: "1",
+        username: "admin"
+    }
+});
+
+Routes.get("/logout", (req,res) => {
+    // Destruir login
+    req.session.destroy((err) => {
+        if(err) throw err;
+        res.json({message: "logout"});
+    })
+});
+
 Routes.get("/users",async (req,res) =>{
     try{
         const users = await queryAs.getAllUsers();
